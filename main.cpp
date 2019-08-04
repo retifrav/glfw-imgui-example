@@ -48,14 +48,15 @@ void DrawModel(int wireframe)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHT0);    // use default light diffuse and position
+    // use default light diffuse and position
+    glEnable(GL_LIGHT0);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(3.0);
     
-    if(wireframe)
+    if (wireframe)
     {
         glDisable(GL_CULL_FACE);    
         glDisable(GL_LIGHTING);
@@ -70,7 +71,7 @@ void DrawModel(int wireframe)
         numPass = 2;
     }
 
-    for(pass = 0; pass < numPass; ++pass)
+    for (pass = 0; pass < numPass; ++pass)
     {
         // since the material could be transparent,
         // we draw the convex model in 2 passes
@@ -79,17 +80,41 @@ void DrawModel(int wireframe)
         // draw the model (a cube)
         glBegin(GL_QUADS);
             // front face
-            glNormal3f(0,0,-1); glVertex3f(0,0,0); glVertex3f(0,1,0); glVertex3f(1,1,0); glVertex3f(1,0,0);
+            glNormal3f(0,0,-1);
+            glVertex3f(0,0,0);
+            glVertex3f(0,1,0);
+            glVertex3f(1,1,0);
+            glVertex3f(1,0,0);
             // back face
-            glNormal3f(0,0,+1); glVertex3f(0,0,1); glVertex3f(1,0,1); glVertex3f(1,1,1); glVertex3f(0,1,1);
+            glNormal3f(0,0,+1);
+            glVertex3f(0,0,1);
+            glVertex3f(1,0,1);
+            glVertex3f(1,1,1);
+            glVertex3f(0,1,1);
             // left face
-            glNormal3f(-1,0,0); glVertex3f(0,0,0); glVertex3f(0,0,1); glVertex3f(0,1,1); glVertex3f(0,1,0);
+            glNormal3f(-1,0,0);
+            glVertex3f(0,0,0);
+            glVertex3f(0,0,1);
+            glVertex3f(0,1,1);
+            glVertex3f(0,1,0);
             // right face
-            glNormal3f(+1,0,0); glVertex3f(1,0,0); glVertex3f(1,1,0); glVertex3f(1,1,1); glVertex3f(1,0,1);
+            glNormal3f(+1,0,0);
+            glVertex3f(1,0,0);
+            glVertex3f(1,1,0);
+            glVertex3f(1,1,1);
+            glVertex3f(1,0,1);
             // bottom face
-            glNormal3f(0,-1,0); glVertex3f(0,0,0); glVertex3f(1,0,0); glVertex3f(1,0,1); glVertex3f(0,0,1); 
+            glNormal3f(0,-1,0);
+            glVertex3f(0,0,0);
+            glVertex3f(1,0,0);
+            glVertex3f(1,0,1);
+            glVertex3f(0,0,1); 
             // top face
-            glNormal3f(0,+1,0); glVertex3f(0,1,0); glVertex3f(0,1,1); glVertex3f(1,1,1); glVertex3f(1,1,0);
+            glNormal3f(0,+1,0);
+            glVertex3f(0,1,0);
+            glVertex3f(0,1,1);
+            glVertex3f(1,1,1);
+            glVertex3f(1,1,0);
         glEnd();
     }
 }
@@ -206,17 +231,18 @@ int main(int argc, char *argv[])
         glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // rotate model
+        // rotate the cube
         dt = glfwGetTime() - time;
-        if( dt < 0 ) dt = 0;
+        if(dt < 0) { dt = 0; }
         time += dt;
         turn += speed * dt;
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glRotated(360.0*turn, 0.4, 1, 0.2);
+        glRotated(360.0 * turn, 0.4, 1, 0.2);
         glTranslated(-0.5, -0.5, -0.5);
-        // set color and draw model
+        // set the cube color
         glColor4ubv(cubeColor);
+        // and finally draw it
         DrawModel(wire);
 
         // start the Dear ImGui frame
@@ -323,9 +349,6 @@ int main(int argc, char *argv[])
 
         // rendering
         ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
         ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
         glfwMakeContextCurrent(window);
 

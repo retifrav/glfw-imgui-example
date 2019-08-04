@@ -1,6 +1,6 @@
 # glfw-imgui-example
 
-An example of using [Dear ImGui](https://github.com/ocornut/imgui) with [https://www.glfw.org](https://www.glfw.org).
+An example of using [Dear ImGui](https://github.com/ocornut/imgui) with [GLFW](https://www.glfw.org).
 
 ![GLFW and Dear ImGui](/img/screenshot.png "GLFW and Dear ImGui")
 
