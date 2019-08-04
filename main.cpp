@@ -228,6 +228,7 @@ int main(int argc, char *argv[])
 
     while (!glfwWindowShouldClose(window))
     {
+        // the frame starts with a clean scene
         glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
