@@ -241,15 +241,9 @@ int main(int argc, char *argv[])
         glLoadIdentity();
         glRotated(360.0 * turn, 0.4, 1, 0.2);
         glTranslated(-0.5, -0.5, -0.5);
-<<<<<<< HEAD
         // set the cube color
         glColor4ubv(cubeColor);
-        // and finally draw it
-=======
-        // set model color
-        glColor4ubv(cubeColor);
         // and draw the model
->>>>>>> cd91a7f117dc967485549625473517232a4b0d55
         DrawModel(wire);
 
         // start the Dear ImGui frame
