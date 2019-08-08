@@ -138,20 +138,22 @@ int main(int argc, char *argv[])
         std::cout << "[INFO] GLFW initialized\n";
     }
 
+    float highDPIscaleFactor = 1.0;
+#ifdef WIN32
     // if it's a HighDPI monitor, try to scale everything
-    // but it doesn't really work that well, from what I saw in Windows
-    /*
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(monitor, &xscale, &yscale);
-    std::cout << xscale << ":" << yscale;
+    std::cout << "[INFO] Monitor scale: " << xscale << "x" << yscale << std::endl;
     if (xscale > 1 || yscale > 1)
     {
+        highDPIscaleFactor = xscale;
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     }
-    */
+#endif
 #ifdef __APPLE__
     // to prevent 1200x800 from becoming 2400x1600
+    // and some other weird resizings
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 #endif
     GLFWwindow *window = glfwCreateWindow(
@@ -169,9 +171,7 @@ int main(int argc, char *argv[])
     }
     // watch window resizing
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
     glfwMakeContextCurrent(window);
-
     // VSync
     glfwSwapInterval(1);
 
@@ -190,15 +190,20 @@ int main(int argc, char *argv[])
               << GLVersion.major << "." << GLVersion.minor
               << std::endl;
 
+    int actualWindowWidth, actualWindowHeight;
+    glfwGetWindowSize(window, &actualWindowWidth, &actualWindowHeight);
+    std::cout << "[INFO] Window size: " << actualWindowWidth << "x" << actualWindowHeight << std::endl;
+    glViewport(0, 0, actualWindowWidth, actualWindowHeight);
+
     // --- Dear ImGui
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     
-    io.Fonts->AddFontFromFileTTF("verdana.ttf", 18.0f, NULL, NULL);
+    io.Fonts->AddFontFromFileTTF("verdana.ttf", 18.0f * highDPIscaleFactor, NULL, NULL);
 
-    setImGuiStyle();
+    setImGuiStyle(highDPIscaleFactor);
 
     // setup platform/renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);

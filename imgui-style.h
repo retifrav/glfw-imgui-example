@@ -1,6 +1,6 @@
 #include "imgui/imgui.h"
 
-void setImGuiStyle()
+void setImGuiStyle(float highDPIscaleFactor)
 {
     ImGuiStyle &style = ImGui::GetStyle();
 
@@ -63,4 +63,6 @@ void setImGuiStyle()
     // style.WindowTitleAlign.x = 0.50f;
     // style.FrameBorderSize = 0.0f;
     // style.WindowBorderSize = 1.0f;
+
+    style.ScaleAllSizes(highDPIscaleFactor);
 }
