@@ -7,7 +7,7 @@
 // Dear ImGui
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include "functions.h"
 #include "imgui-style.h"
@@ -31,7 +31,7 @@ static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void teardown(GLFWwindow *window)
 {
-    ImGui_ImplOpenGL2_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
@@ -39,6 +39,7 @@ void teardown(GLFWwindow *window)
     glfwTerminate();
 }
 
+/* after switching to OpenGL 3 it doesn't show up at the scene
 // https://sourceforge.net/p/anttweakbar/code/ci/master/tree/examples/TwSimpleGLFW.c
 void DrawModel(int wireframe)
 {
@@ -118,6 +119,7 @@ void DrawModel(int wireframe)
         glEnd();
     }
 }
+*/
 
 int main(int argc, char *argv[])
 {
@@ -138,8 +140,41 @@ int main(int argc, char *argv[])
         std::cout << "[INFO] GLFW initialized\n";
     }
 
+    // setup GLFW window
+
+    glfwWindowHint(GLFW_DOUBLEBUFFER , 1);
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);
+
+    glfwWindowHint(
+        GLFW_OPENGL_PROFILE,
+        GLFW_OPENGL_CORE_PROFILE
+        );
+
+    std::string glsl_version = "";
+#ifdef __APPLE__
+    // GL 3.2 + GLSL 150
+    glsl_version = "#version 150";
+    glfwWindowHint( // required on Mac OS
+        GLFW_OPENGL_FORWARD_COMPAT,
+        GL_TRUE
+        );
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#elif __linux__
+    // GL 3.2 + GLSL 150
+    glsl_version = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#elif _WIN32
+    // GL 3.0 + GLSL 130
+    glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+#endif
+
     float highDPIscaleFactor = 1.0;
-#ifdef WIN32
+#ifdef _WIN32
     // if it's a HighDPI monitor, try to scale everything
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     float xscale, yscale;
@@ -150,12 +185,12 @@ int main(int argc, char *argv[])
         highDPIscaleFactor = xscale;
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     }
-#endif
-#ifdef __APPLE__
+#elif __APPLE__
     // to prevent 1200x800 from becoming 2400x1600
     // and some other weird resizings
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 #endif
+
     GLFWwindow *window = glfwCreateWindow(
         windowWidth,
         windowHeight,
@@ -172,6 +207,7 @@ int main(int argc, char *argv[])
     // watch window resizing
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwMakeContextCurrent(window);
+    
     // VSync
     glfwSwapInterval(1);
 
@@ -186,9 +222,19 @@ int main(int argc, char *argv[])
         std::cout << "[INFO] GLAD initialized\n";
     }
 
-    std::cout << "[INFO] OpenGL "
+    std::cout << "[INFO] OpenGL renderer: "
+              << glGetString(GL_RENDERER)
+              << std::endl;
+
+    std::cout << "[INFO] OpenGL from glad "
               << GLVersion.major << "." << GLVersion.minor
               << std::endl;
+
+    // std::cout << "[INFO] OpenGL from GLFW "
+    //           << glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR)
+    //           << "."
+    //           << glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR)
+    //           << std::endl;
 
     int actualWindowWidth, actualWindowHeight;
     glfwGetWindowSize(window, &actualWindowWidth, &actualWindowHeight);
@@ -207,7 +253,7 @@ int main(int argc, char *argv[])
 
     // setup platform/renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL2_Init();
+    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
     bool show_demo_window = false;
     bool show_another_window = false;
@@ -216,6 +262,7 @@ int main(int argc, char *argv[])
 
     //glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
 
+    /*
     // --- model
 
     // current time and enlapsed time
@@ -228,15 +275,16 @@ int main(int argc, char *argv[])
     int wire = 0;
     // model color (32bits RGBA)
     unsigned char cubeColor[] = { 255, 0, 0, 128 };
+    */
 
+    glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
     // --- rendering loop
-
     while (!glfwWindowShouldClose(window))
     {
         // the frame starts with a clean scene
-        glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+        /*
         // rotate the cube
         dt = glfwGetTime() - time;
         if(dt < 0) { dt = 0; }
@@ -250,9 +298,10 @@ int main(int argc, char *argv[])
         glColor4ubv(cubeColor);
         // and draw the model
         DrawModel(wire);
+        */
 
         // start the Dear ImGui frame
-        ImGui_ImplOpenGL2_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         // standard demo window
@@ -355,8 +404,7 @@ int main(int argc, char *argv[])
 
         // rendering
         ImGui::Render();
-        ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-        glfwMakeContextCurrent(window);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
         glfwPollEvents();
