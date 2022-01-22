@@ -4,8 +4,11 @@ install
 .vscode
 .cache
 
-_dependencies/DearImGui/*.h
-_dependencies/DearImGui/*.cpp
+_dependencies/glad/*
+_dependencies/glfw/*
+_dependencies/DearImGui/*
+!.gitkeep
+
 *.sublime-workspace
 
 compile_commands.json

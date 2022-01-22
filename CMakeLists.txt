@@ -14,8 +14,18 @@ add_executable(${CMAKE_PROJECT_NAME})
 
 # --- cache variables and options
 
-set(GLAD_PREFIX "~/programs" CACHE STRING "Path to Glad")
-set(GLFW_PREFIX "d:/programs/glfw" CACHE STRING "Path to GLFW")
+set(GLAD_PREFIX
+    "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/glad"
+    CACHE STRING "Path to glad"
+)
+set(GLFW_PREFIX
+    "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/glfw"
+    CACHE STRING "Path to GLFW"
+)
+set(DEAR_IMGUI_PREFIX
+    "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui"
+    CACHE STRING "Path to Dear ImGui"
+)
 
 option(USING_CONAN "Dependencies are handled by Conan" OFF)
 
@@ -59,21 +69,21 @@ else()
 endif()
 
 # GLFW
-if(USING_CONAN OR (NOT WIN32))
+if(USING_CONAN)#OR (NOT WIN32))
     find_package(glfw3 CONFIG REQUIRED)
-    target_link_libraries(${CMAKE_PROJECT_NAME}
-        PRIVATE
-            glfw
-    )
 else()
-    find_library(glfw glfw3 PATHS "${GLFW_PREFIX}/lib")
+    #find_library(glfw glfw3 PATHS "${GLFW_PREFIX}/lib")
+    set(GLFW_BUILD_EXAMPLES OFF)
+    set(GLFW_BUILD_TESTS OFF)
+    set(GLFW_BUILD_DOCS OFF)
+    add_subdirectory(${GLFW_PREFIX})
     include_directories(
         "${GLFW_PREFIX}/include"
     )
-    target_link_libraries(${CMAKE_PROJECT_NAME}
-        PRIVATE
-            ${glfw}
-    )
+    # target_link_libraries(${CMAKE_PROJECT_NAME}
+    #     PRIVATE
+    #         ${glfw}
+    # )
 endif()
 
 # DearImGui
@@ -85,14 +95,14 @@ if(USING_CONAN)
     )
 else() # add Dear ImGui sources manually
     list(APPEND sources
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_stdlib.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_draw.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_tables.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_widgets.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_impl_glfw.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_impl_opengl3.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_demo.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_stdlib.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_draw.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_tables.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_widgets.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_impl_glfw.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_impl_opengl3.cpp
+        ${DEAR_IMGUI_PREFIX}/imgui_demo.cpp
     )
 endif()
 
@@ -105,6 +115,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         ${OPENGL_gl_LIBRARY}
         glad
+        glfw
 )
 
 if (UNIX)
@@ -130,9 +141,11 @@ endif()
 include(GNUInstallDirs)
 
 install(TARGETS ${CMAKE_PROJECT_NAME}
+    COMPONENT ${CMAKE_PROJECT_NAME}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/${CMAKE_PROJECT_NAME}
 )
 install(FILES
     ${resource_files}
     DESTINATION ${CMAKE_INSTALL_BINDIR}/${CMAKE_PROJECT_NAME}
+    COMPONENT ${CMAKE_PROJECT_NAME}
 )

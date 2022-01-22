@@ -166,6 +166,11 @@ bool initializeGLFW()
               << glfwGetWindowAttrib(glfWindow, GLFW_CONTEXT_VERSION_MINOR)
               << std::endl;
 
+    return true;
+}
+
+bool initializeGLAD()
+{
     // load all OpenGL function pointers with glad
     // without it not all the OpenGL functions will be available,
     // such as glGetString(GL_RENDERER), and application might just segfault
@@ -412,6 +417,12 @@ int main(int argc, char *argv[])
     if (!initializeGLFW())
     {
         std::cerr << "[ERROR] GLFW initialization failed" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (!initializeGLAD())
+    {
+        std::cerr << "[ERROR] glad initialization failed" << std::endl;
         return EXIT_FAILURE;
     }
 
