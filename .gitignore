@@ -1,4 +1,11 @@
-build/*
-lib/*
-.vscode/*
-imgui.ini
+build
+install
+
+.vscode
+.cache
+
+_dependencies/DearImGui/*.h
+_dependencies/DearImGui/*.cpp
+*.sublime-workspace
+
+compile_commands.json

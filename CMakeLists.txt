@@ -1,9 +1,42 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 
-project("glfw-imgui" VERSION 0.9)
-message("Project name: " ${CMAKE_PROJECT_NAME})
+project("glfw-imgui"
+    DESCRIPTION "Example application based on GLFW and Dear ImGui"
+    VERSION 0.9.1
+    LANGUAGES CXX
+)
+#message("Project name: " ${CMAKE_PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_executable(${CMAKE_PROJECT_NAME})
+
+# --- cache variables and options
+
+set(GLFW_PREFIX "d:/programs/glfw" CACHE STRING "Path to GLFW")
+
+option(USING_CONAN "Dependencies are handled by Conan" OFF)
+
+# ---
+
+if(USING_CONAN)
+    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+else()
+    include_directories(
+        "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies"
+    )
+endif()
+
+set(sources
+    main.cpp
+    functions.cpp
+)
+
+set(resource_files
+    ${CMAKE_SOURCE_DIR}/JetBrainsMono-ExtraLight.ttf
+)
 
 find_package(OpenGL REQUIRED)
 
@@ -14,65 +47,80 @@ if (UNIX)
     endif()
 endif()
 
-if (WIN32)
-    SET (PROGRAMS-PREFIX "c:/programs")
+# GLFW
+if(USING_CONAN OR (NOT WIN32))
+    find_package(glfw3 CONFIG REQUIRED)
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            glfw
+    )
 else()
-    SET (PROGRAMS-PREFIX "~/programs")
+    find_library(glfw glfw3 PATHS "${GLFW_PREFIX}/lib")
+    include_directories(
+        "${GLFW_PREFIX}/include"
+    )
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            ${glfw}
+    )
 endif()
-add_library("glad" "${PROGRAMS-PREFIX}/glad/src/glad.c")
-find_library(GLFW glfw3 PATHS "${PROGRAMS-PREFIX}/glfw/lib")
 
-include_directories(
-    "${PROGRAMS-PREFIX}/glad/include"
-    "${PROGRAMS-PREFIX}/glfw/include"
+# DearImGui
+if(USING_CONAN)
+    find_package(DearImGui CONFIG REQUIRED)
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            DearImGui
     )
-
-set(sources
-    main.cpp
-    functions.cpp
-    imgui/imconfig.h
-    imgui/imgui_demo.cpp
-    imgui/imgui_draw.cpp
-    imgui/imgui_impl_glfw.cpp
-    imgui/imgui_impl_glfw.h
-    imgui/imgui_impl_opengl3.cpp
-    imgui/imgui_impl_opengl3.h
-    imgui/imgui_internal.h
-    imgui/imgui_widgets.cpp
-    imgui/imgui.cpp
-    imgui/imgui.h
-    imgui/imstb_rectpack.h
-    imgui/imstb_textedit.h
-    imgui/imstb_truetype.h
+else() # add Dear ImGui sources manually
+    list(APPEND sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_stdlib.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_draw.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_tables.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_widgets.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_impl_glfw.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_impl_opengl3.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui/imgui_demo.cpp
     )
+endif()
 
-add_executable(${CMAKE_PROJECT_NAME} ${sources})
+target_sources(${CMAKE_PROJECT_NAME}
+    PRIVATE
+        ${sources}
+)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    ${OPENGL_gl_LIBRARY}
-    "glad"
-    ${GLFW}
-    )
+    PRIVATE
+        ${OPENGL_gl_LIBRARY}
+)
+
 if (UNIX)
     if (APPLE)
         target_link_libraries(${CMAKE_PROJECT_NAME}
-            "-framework Cocoa"
-            "-framework IOKit"
-            "-framework CoreVideo"
-            )
+            PRIVATE
+                "-framework Cocoa"
+                "-framework IOKit"
+                "-framework CoreVideo"
+        )
     else()
         target_link_libraries(${CMAKE_PROJECT_NAME}
-            ${CMAKE_THREAD_LIBS_INIT}
-            ${X11_LIBRARIES}
-            ${CMAKE_DL_LIBS}
-            )
+            PRIVATE
+                ${CMAKE_THREAD_LIBS_INIT}
+                ${X11_LIBRARIES}
+                ${CMAKE_DL_LIBS}
+        )
     endif()
 endif()
 
-# copy font file to the build directory
-add_custom_command(
-    TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/verdana.ttf
-            ${CMAKE_CURRENT_BINARY_DIR}/verdana.ttf
-            )
+# --- installation
+
+include(GNUInstallDirs)
+
+install(TARGETS ${CMAKE_PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/${CMAKE_PROJECT_NAME}
+)
+install(FILES
+    ${resource_files}
+    DESTINATION ${CMAKE_INSTALL_BINDIR}/${CMAKE_PROJECT_NAME}
+)
