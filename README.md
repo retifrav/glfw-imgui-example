@@ -1,4 +1,4 @@
-# glfw-imgui-example
+# GLFW Dear ImGui example
 
 An example of using [Dear ImGui](https://github.com/ocornut/imgui) with [GLFW](https://www.glfw.org).
 
@@ -12,7 +12,10 @@ More information in the following [article](https://retifrav.github.io/blog/2019
 
 Copy required Dear ImGui sources to `_dependencies/DearImGui/`.
 
-You might also need to set path to GLFW library with `-DGLFW_PREFIX="/path/to/glfw"`.
+You might also need to set paths to required libraries:
+
+- glad: `-DGLAD_PREFIX="/path/to/glad/generated"`
+- GLFW: `-DGLFW_PREFIX="/path/to/glfw"`
 
 ``` sh
 $ mkdir build && cd $_

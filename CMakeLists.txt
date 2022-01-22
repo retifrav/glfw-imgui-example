@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 project("glfw-imgui"
     DESCRIPTION "Example application based on GLFW and Dear ImGui"
     VERSION 0.9.1
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 #message("Project name: " ${CMAKE_PROJECT_NAME})
 
@@ -14,6 +14,7 @@ add_executable(${CMAKE_PROJECT_NAME})
 
 # --- cache variables and options
 
+set(GLAD_PREFIX "~/programs" CACHE STRING "Path to Glad")
 set(GLFW_PREFIX "d:/programs/glfw" CACHE STRING "Path to GLFW")
 
 option(USING_CONAN "Dependencies are handled by Conan" OFF)
@@ -45,6 +46,16 @@ if (UNIX)
         find_package(Threads REQUIRED)
         find_package(X11 REQUIRED)
     endif()
+endif()
+
+# glad
+if (USING_CONAN)
+    find_package(glad CONFIG REQUIRED)
+else()
+    add_library(glad "${GLAD_PREFIX}/src/glad.c")
+    include_directories(
+        "${GLAD_PREFIX}/include"
+    )
 endif()
 
 # GLFW
@@ -93,6 +104,7 @@ target_sources(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         ${OPENGL_gl_LIBRARY}
+        glad
 )
 
 if (UNIX)
