@@ -1,19 +1,13 @@
 from conans import ConanFile, CMake
 
-requirements = [
-    "glad/0.1.36",
-    "GLFW/3.3.5",
-    "DearImGui/1.86.0"
-]
+prefixChannel = "@YOUR-PREFIX/YOUR-CHANNEL"
 
 
 class SandboxConan(ConanFile):
     settings = "os", "arch", "compiler"
     generators = "cmake"
-
-    def configure(self):
-
-        for r in requirements:
-            self.requires(
-                f"{r}@YOUR-PREFIX/public"
-            )
+    requires = [
+        f"glad/0.1.36{prefixChannel}",
+        f"GLFW/3.3.5{prefixChannel}",
+        f"DearImGui/1.86.0{prefixChannel}"
+    ]

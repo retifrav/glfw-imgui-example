@@ -335,6 +335,10 @@ void composeDearImGuiFrame()
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "GLFW");
         ImGui::Text("%s", glfwGetVersionString());
 
+        ImGui::Dummy(ImVec2(0.0f, 3.0f));
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "Dear ImGui");
+        ImGui::Text("%s", IMGUI_VERSION);
+
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
