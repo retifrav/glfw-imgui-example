@@ -4,7 +4,7 @@ An example of using [Dear ImGui](https://github.com/ocornut/imgui) with [GLFW](h
 
 ![GLFW and Dear ImGui](/img/screenshot.png "GLFW and Dear ImGui")
 
-More information in the following [article](https://retifrav.github.io/blog/2019/08/04/glfw-dear-imgui/).
+More information about the application in the following [article](https://decovar.dev/blog/2019/08/04/glfw-dear-imgui/).
 
 ## Building
 
@@ -37,3 +37,5 @@ $ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" 
 $ cmake --build . --target install
 $ ../install/bin/glfw-imgui/glfw-imgui
 ```
+
+More information about resolving dependencies with Conan [here](https://decovar.dev/blog/2022/02/06/cpp-dependencies-with-conan/).
