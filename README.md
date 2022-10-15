@@ -6,9 +6,18 @@ An example of using [Dear ImGui](https://github.com/ocornut/imgui) with [GLFW](h
 
 More information about the application in the following [article](https://decovar.dev/blog/2019/08/04/glfw-dear-imgui/).
 
+<!-- MarkdownTOC -->
+
+- [Building](#building)
+    - [Without package managers](#without-package-managers)
+    - [With Conan](#with-conan)
+    - [With vcpkg](#with-vcpkg)
+
+<!-- /MarkdownTOC -->
+
 ## Building
 
-### Without Conan
+### Without package managers
 
 Dependencies are built from sources. Provide paths to required libraries source code:
 
@@ -19,6 +28,7 @@ Dependencies are built from sources. Provide paths to required libraries source 
 By default these paths are set to `_dependencies/LIBRARY-NAME` (*so you can copy those there*).
 
 ``` sh
+$ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
 $ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_CONAN=0 ..
 $ cmake --build .
@@ -31,6 +41,7 @@ $ ../install/bin/glfw-imgui/glfw-imgui
 Pre-built dependencies are fetched from Conan server, only the application itself is built from sources.
 
 ``` sh
+$ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
 $ conan install .. --remote=YOUR-CONAN-REMOTE
 $ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_CONAN=1 ..
@@ -39,3 +50,20 @@ $ ../install/bin/glfw-imgui/glfw-imgui
 ```
 
 More information about resolving dependencies with Conan [here](https://decovar.dev/blog/2022/02/06/cpp-dependencies-with-conan/).
+
+### With vcpkg
+
+Preparation:
+
+- you need to have [vcpkg](https://vcpkg.io/) installed;
+    + its executable is available in the `PATH`;
+    + `VCPKG_ROOT` environment variable is set;
+- to be able to use CMake presets `v3`, you need to have CMake at least `v3.21`.
+
+And then:
+
+``` sh
+$ cd /path/to/glfw-imgui-example
+$ cmake --preset ninja-release-vcpkg
+$ cmake --build --preset ninja-release-vcpkg
+```

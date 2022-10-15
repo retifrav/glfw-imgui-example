@@ -27,13 +27,20 @@ set(DEAR_IMGUI_PREFIX
     CACHE STRING "Path to Dear ImGui"
 )
 
-option(USING_CONAN "Dependencies are handled by Conan" OFF)
+option(USING_PACKAGE_MANAGER       "Dependencies are resolved with a package manager" 0)
+option(USING_PACKAGE_MANAGER_CONAN "Using Conan package manager"                      0)
+
+if(USING_PACKAGE_MANAGER_CONAN)
+    set(USING_PACKAGE_MANAGER 1)
+endif()
 
 # ---
 
-if(USING_CONAN)
-    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
+if(USING_PACKAGE_MANAGER)
+    if(USING_PACKAGE_MANAGER_CONAN)
+        include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+        conan_basic_setup()
+    endif()
 else()
     include_directories(
         "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies"
@@ -59,7 +66,7 @@ if (UNIX)
 endif()
 
 # glad
-if (USING_CONAN)
+if (USING_PACKAGE_MANAGER)
     find_package(glad CONFIG REQUIRED)
 else()
     add_library(glad "${GLAD_PREFIX}/src/glad.c")
@@ -69,7 +76,7 @@ else()
 endif()
 
 # GLFW
-if(USING_CONAN)#OR (NOT WIN32))
+if(USING_PACKAGE_MANAGER)#OR (NOT WIN32))
     find_package(glfw3 CONFIG REQUIRED)
 else()
     #find_library(glfw glfw3 PATHS "${GLFW_PREFIX}/lib")
@@ -86,8 +93,8 @@ else()
     # )
 endif()
 
-# DearImGui
-if(USING_CONAN)
+# Dear ImGui
+if(USING_PACKAGE_MANAGER)
     find_package(DearImGui CONFIG REQUIRED)
     target_link_libraries(${CMAKE_PROJECT_NAME}
         PRIVATE
@@ -114,7 +121,7 @@ target_sources(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         ${OPENGL_gl_LIBRARY}
-        glad
+        glad::glad # might be just glad in case of Conan
         glfw
 )
 

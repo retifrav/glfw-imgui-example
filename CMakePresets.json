@@ -1,0 +1,92 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired":
+    {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets":
+    [
+        {
+            "name": "default",
+            "displayName": "Default configuration",
+            "description": "Default configuration with all the options set to their default values",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}"
+        },
+        {
+            "name": "ninja",
+            "inherits": "default",
+            "displayName": "Ninja generator | release",
+            "generator": "Ninja",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE":
+                {
+                    "type": "STRING",
+                    "value": "Release"
+                }
+            }
+        },
+        {
+            "name": "ninja-vcpkg",
+            "inherits": "ninja",
+            "displayName": "Ninja generator | release | with vcpkg",
+            "cacheVariables":
+            {
+                "USING_PACKAGE_MANAGER":
+                {
+                    "type": "BOOL",
+                    "value": true
+                },
+                "CMAKE_TOOLCHAIN_FILE":
+                {
+                    "type": "FILEPATH",
+                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                }
+            }
+        },
+        {
+            "name": "ninja-vcpkg-windows-static",
+            "inherits": "ninja-vcpkg",
+            "displayName": "Ninja generator | release | with vcpkg | Windows | static linking",
+            "cacheVariables":
+            {
+                "VCPKG_TARGET_TRIPLET":
+                {
+                    "type": "STRING",
+                    "value": "x64-windows-static"
+                },
+                "VCPKG_HOST_TRIPLET":
+                {
+                    "type": "STRING",
+                    "value": "x64-windows-static"
+                }
+            }
+        }
+    ],
+    "buildPresets":
+    [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "targets": "install"
+        },
+        {
+            "name": "ninja",
+            "configurePreset": "ninja",
+            "targets": "install"
+        },
+        {
+            "name": "ninja-vcpkg",
+            "configurePreset": "ninja-vcpkg",
+            "targets": "install"
+        },
+        {
+            "name": "ninja-vcpkg-windows-static",
+            "configurePreset": "ninja-vcpkg-windows-static",
+            "targets": "install"
+        }
+    ]
+}

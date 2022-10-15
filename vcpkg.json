@@ -1,0 +1,31 @@
+{
+    "name": "glfw-imgui-example",
+    "version": "0",
+    "dependencies":
+    [
+        "glad",
+        "glfw",
+        {
+            "name": "dear-imgui",
+            "features":
+            [
+                "backend-glfw"
+            ]
+        }
+    ],
+    "overrides":
+    [
+        {
+            "name": "glad",
+            "version": "0.1.36"
+        },
+        {
+            "name": "glfw",
+            "version": "3.3.8"
+        },
+        {
+            "name": "dear-imgui",
+            "version": "1.88.0"
+        }
+    ]
+}
