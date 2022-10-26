@@ -8,6 +8,6 @@ class SandboxConan(ConanFile):
     generators = "cmake"
     requires = [
         f"glad/0.1.36{prefixChannel}",
-        f"GLFW/3.3.5{prefixChannel}",
-        f"DearImGui/1.86.0{prefixChannel}"
+        f"glfw/3.3.5{prefixChannel}",
+        f"imgui/1.86.0{prefixChannel}"
     ]

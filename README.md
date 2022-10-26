@@ -40,13 +40,26 @@ $ ../install/bin/glfw-imgui/glfw-imgui
 
 Pre-built dependencies are fetched from Conan server, only the application itself is built from sources.
 
+Without using CMake preset:
+
 ``` sh
 $ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
 $ conan install .. --remote=YOUR-CONAN-REMOTE
-$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_CONAN=1 ..
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_PACKAGE_MANAGER_CONAN=1 ..
 $ cmake --build . --target install
 $ ../install/bin/glfw-imgui/glfw-imgui
+```
+
+Using CMake preset:
+
+``` sh
+$ cd /path/to/glfw-imgui-example
+$ mkdir build/conan && cd $_
+$ conan install ../.. -r YOUR-CONAN-REMOTE
+$ cd ../..
+$ cmake --preset conan -G Ninja
+$ cmake --build --preset conan
 ```
 
 More information about resolving dependencies with Conan [here](https://decovar.dev/blog/2022/02/06/cpp-dependencies-with-conan/).
@@ -60,10 +73,20 @@ Preparation:
     + `VCPKG_ROOT` environment variable is set;
 - to be able to use CMake presets `v3`, you need to have CMake at least `v3.21`.
 
-And then:
+Without using CMake preset:
 
 ``` sh
 $ cd /path/to/glfw-imgui-example
-$ cmake --preset ninja-release-vcpkg
-$ cmake --build --preset ninja-release-vcpkg
+$ mkdir build && cd $_
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_PACKAGE_MANAGER_VCPKG=1 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" ..
 ```
+
+Using CMake preset:
+
+``` sh
+$ cd /path/to/glfw-imgui-example
+$ cmake --preset vcpkg-default-triplet -G Ninja
+$ cmake --build --preset vcpkg-default-triplet
+```
+
+More information about resolving dependencies with vcpkg [here](#).

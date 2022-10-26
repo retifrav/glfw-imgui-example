@@ -27,10 +27,22 @@ set(DEAR_IMGUI_PREFIX
     CACHE STRING "Path to Dear ImGui"
 )
 
-option(USING_PACKAGE_MANAGER       "Dependencies are resolved with a package manager" 0)
-option(USING_PACKAGE_MANAGER_CONAN "Using Conan package manager"                      0)
+option(CRT_LINKAGE_STATIC          "Link MSVC runtime statically"                       0)
+option(USING_PACKAGE_MANAGER       "Using a package manager for resolving dependencies" 0)
+option(USING_PACKAGE_MANAGER_CONAN "Using Conan package manager"                        0)
+option(USING_PACKAGE_MANAGER_VCPKG "Using Conan package manager"                        0)
 
-if(USING_PACKAGE_MANAGER_CONAN)
+if(WIN32 AND CRT_LINKAGE_STATIC)
+    #add_compile_options("/MT")
+    if(POLICY CMP0091)
+        cmake_policy(SET CMP0091 NEW)
+    endif()
+    set_property(TARGET ${CMAKE_PROJECT_NAME}
+        PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+    )
+endif()
+
+if(USING_PACKAGE_MANAGER_CONAN OR USING_PACKAGE_MANAGER_VCPKG)
     set(USING_PACKAGE_MANAGER 1)
 endif()
 
@@ -68,10 +80,25 @@ endif()
 # glad
 if (USING_PACKAGE_MANAGER)
     find_package(glad CONFIG REQUIRED)
+    if(USING_PACKAGE_MANAGER_VCPKG)
+        target_link_libraries(${CMAKE_PROJECT_NAME}
+            PRIVATE
+                glad::glad
+        )
+    else()
+        target_link_libraries(${CMAKE_PROJECT_NAME}
+            PRIVATE
+                glad
+        )
+    endif()
 else()
     add_library(glad "${GLAD_PREFIX}/src/glad.c")
     include_directories(
         "${GLAD_PREFIX}/include"
+    )
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            glad
     )
 endif()
 
@@ -121,7 +148,6 @@ target_sources(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         ${OPENGL_gl_LIBRARY}
-        glad::glad # might be just glad in case of Conan
         glfw
 )
 

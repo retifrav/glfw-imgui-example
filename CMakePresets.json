@@ -13,12 +13,7 @@
             "displayName": "Default configuration",
             "description": "Default configuration with all the options set to their default values",
             "binaryDir": "${sourceDir}/build/${presetName}",
-            "installDir": "${sourceDir}/install/${presetName}"
-        },
-        {
-            "name": "ninja",
-            "inherits": "default",
-            "displayName": "Ninja generator | release",
+            "installDir": "${sourceDir}/install/${presetName}",
             "generator": "Ninja",
             "cacheVariables":
             {
@@ -30,12 +25,30 @@
             }
         },
         {
-            "name": "ninja-vcpkg",
-            "inherits": "ninja",
-            "displayName": "Ninja generator | release | with vcpkg",
+            "name": "conan",
+            "inherits": "default",
+            "displayName": "Conan",
             "cacheVariables":
             {
-                "USING_PACKAGE_MANAGER":
+                "USING_PACKAGE_MANAGER_CONAN":
+                {
+                    "type": "BOOL",
+                    "value": true
+                },
+                "CONAN_DISABLE_CHECK_COMPILER":
+                {
+                    "type": "BOOL",
+                    "value": true
+                }
+            }
+        },
+        {
+            "name": "vcpkg-default-triplet",
+            "inherits": "default",
+            "displayName": "vcpkg | default triplet",
+            "cacheVariables":
+            {
+                "USING_PACKAGE_MANAGER_VCPKG":
                 {
                     "type": "BOOL",
                     "value": true
@@ -48,9 +61,9 @@
             }
         },
         {
-            "name": "ninja-vcpkg-windows-static",
-            "inherits": "ninja-vcpkg",
-            "displayName": "Ninja generator | release | with vcpkg | Windows | static linking",
+            "name": "vcpkg-windows-static",
+            "inherits": "vcpkg-default-triplet",
+            "displayName": "vcpkg | Windows | static",
             "cacheVariables":
             {
                 "VCPKG_TARGET_TRIPLET":
@@ -62,6 +75,11 @@
                 {
                     "type": "STRING",
                     "value": "x64-windows-static"
+                },
+                "CRT_LINKAGE_STATIC":
+                {
+                    "type": "BOOL",
+                    "value": true
                 }
             }
         }
@@ -74,18 +92,18 @@
             "targets": "install"
         },
         {
-            "name": "ninja",
-            "configurePreset": "ninja",
+            "name": "conan",
+            "configurePreset": "conan",
             "targets": "install"
         },
         {
-            "name": "ninja-vcpkg",
-            "configurePreset": "ninja-vcpkg",
+            "name": "vcpkg-default-triplet",
+            "configurePreset": "vcpkg-default-triplet",
             "targets": "install"
         },
         {
-            "name": "ninja-vcpkg-windows-static",
-            "configurePreset": "ninja-vcpkg-windows-static",
+            "name": "vcpkg-windows-static",
+            "configurePreset": "vcpkg-windows-static",
             "targets": "install"
         }
     ]
