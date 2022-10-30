@@ -30,9 +30,11 @@ By default these paths are set to `_dependencies/LIBRARY-NAME` (*so you can copy
 ``` sh
 $ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
-$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_CONAN=0 ..
-$ cmake --build .
-$ cmake --install . --component glfw-imgui
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="../install" \
+    -DUSING_CONAN=0 \
+    ..
+$ cmake --build . --target install
 $ ../install/bin/glfw-imgui/glfw-imgui
 ```
 
@@ -46,9 +48,11 @@ Without using CMake preset:
 $ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
 $ conan install .. --remote=YOUR-CONAN-REMOTE
-$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_PACKAGE_MANAGER_CONAN=1 ..
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="../install" \
+    -DUSING_PACKAGE_MANAGER_CONAN=1 \
+    ..
 $ cmake --build . --target install
-$ ../install/bin/glfw-imgui/glfw-imgui
 ```
 
 Using CMake preset:
@@ -58,7 +62,7 @@ $ cd /path/to/glfw-imgui-example
 $ mkdir build/conan && cd $_
 $ conan install ../.. -r YOUR-CONAN-REMOTE
 $ cd ../..
-$ cmake --preset conan -G Ninja
+$ cmake --preset conan
 $ cmake --build --preset conan
 ```
 
@@ -78,15 +82,20 @@ Without using CMake preset:
 ``` sh
 $ cd /path/to/glfw-imgui-example
 $ mkdir build && cd $_
-$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" -DUSING_PACKAGE_MANAGER_VCPKG=1 -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" ..
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="../install" \
+    -DUSING_PACKAGE_MANAGER_VCPKG=1 \
+    -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+    ..
+$ cmake --build . --target install
 ```
 
 Using CMake preset:
 
 ``` sh
 $ cd /path/to/glfw-imgui-example
-$ cmake --preset vcpkg-default-triplet -G Ninja
+$ cmake --preset vcpkg-default-triplet
 $ cmake --build --preset vcpkg-default-triplet
 ```
 
-More information about resolving dependencies with vcpkg [here](#).
+More information about resolving dependencies with vcpkg [here](https://decovar.dev/blog/2022/10/30/cpp-dependencies-with-vcpkg/).
