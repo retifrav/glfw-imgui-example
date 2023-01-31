@@ -71,11 +71,6 @@
                     "type": "STRING",
                     "value": "x64-windows-static"
                 },
-                "VCPKG_HOST_TRIPLET":
-                {
-                    "type": "STRING",
-                    "value": "x64-windows-static"
-                },
                 "CRT_LINKAGE_STATIC":
                 {
                     "type": "BOOL",
