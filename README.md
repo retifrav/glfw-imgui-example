@@ -12,6 +12,7 @@ More information about the application in the following [article](https://decova
     - [Without package managers](#without-package-managers)
     - [With Conan](#with-conan)
     - [With vcpkg](#with-vcpkg)
+- [Vulkan](#vulkan)
 
 <!-- /MarkdownTOC -->
 
@@ -99,3 +100,17 @@ $ cmake --build --preset vcpkg-default-triplet
 ```
 
 More information about resolving dependencies with vcpkg [here](https://decovar.dev/blog/2022/10/30/cpp-dependencies-with-vcpkg/).
+
+## Vulkan
+
+The application uses OpenGL as the graphics backend. I would like to add an optional Vulkan support, but that won't happen soon.
+
+Some initial support have been already added though, even vcpkg ports of dependencies are adjusted accordingly, so you can try to build it like this:
+
+``` sh
+$ cd /path/to/glfw-imgui-example
+$ cmake --preset vcpkg-windows-static -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=1 -DVCPKG_MANIFEST_FEATURES="with-vulkan" -DUSING_VULKAN=1
+$ cmake --build --preset vcpkg-windows-static
+```
+
+But of course nothing will actually be rendered in the viewport.

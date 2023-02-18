@@ -1,18 +1,50 @@
 {
     "name": "glfw-imgui-example",
     "version": "0",
-    "dependencies":
+    "default-features":
     [
-        "glad",
-        "glfw",
+        "with-opengl"
+    ],
+    "features":
+    {
+        "with-opengl":
         {
-            "name": "dear-imgui",
-            "features":
+            "description": "Using OpenGL as the graphics backend",
+            "dependencies":
             [
-                "backend-glfw"
+                "glad",
+                "glfw",
+                {
+                    "name": "dear-imgui",
+                    "features":
+                    [
+                        "backend-glfw-opengl"
+                    ]
+                }
+            ]
+        },
+        "with-vulkan":
+        {
+            "description": "Using Vulkan as the graphics backend",
+            "dependencies":
+            [
+                {
+                    "name": "dear-imgui",
+                    "features":
+                    [
+                        "backend-glfw-vulkan"
+                    ]
+                },
+                {
+                    "name": "glfw",
+                    "features":
+                    [
+                        "vulkan-static"
+                    ]
+                }
             ]
         }
-    ],
+    },
     "overrides":
     [
         {
@@ -25,7 +57,7 @@
         },
         {
             "name": "dear-imgui",
-            "version": "1.88.0"
+            "version": "1.89.3"
         }
     ]
 }

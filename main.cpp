@@ -4,14 +4,22 @@
 #include <filesystem>
 
 // GLFW
-#include <glad/glad.h>
+#ifndef USING_VULKAN
+    #include <glad/glad.h>
+#else
+    #define GLFW_INCLUDE_VULKAN
+#endif
 #include <GLFW/glfw3.h>
 
 // Dear ImGui
 #include <DearImGui/imgui.h>
 #include <DearImGui/imgui_stdlib.h>
 #include <DearImGui/imgui_impl_glfw.h>
-#include <DearImGui/imgui_impl_opengl3.h>
+#ifndef USING_VULKAN
+    #include <DearImGui/imgui_impl_opengl3.h>
+#else
+    #include <DearImGui/imgui_impl_vulkan.h>
+#endif
 
 #include "functions.h"
 #include "imgui-style.h"
@@ -53,19 +61,29 @@ static void glfw_error_callback(int error, const char *description)
 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
+#ifndef USING_VULKAN
     glViewport(0, 0, width, height);
+#else
+    std::cout << "[WARNING] Resizing viewport isn't implemented with Vulkan yet" << std::endl;
+#endif
 }
 
 void teardown()
 {
+#ifndef USING_VULKAN
     ImGui_ImplOpenGL3_Shutdown();
+#else
+    ImGui_ImplVulkan_Shutdown();
+#endif
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
     // optional: de-allocate all resources once they've outlived their purpose
+#ifndef USING_VULKAN
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
+#endif
 
     if (glfWindow != NULL) { glfwDestroyWindow(glfWindow); }
     glfwTerminate();
@@ -85,6 +103,20 @@ bool initializeGLFW()
         std::cout << "[INFO] GLFW initialized" << std::endl;
     }
 
+#ifdef USING_VULKAN
+    if (glfwVulkanSupported())
+    {
+        std::cout << "Vulkan is supported" << std::endl;
+    }
+    else
+    {
+        std::cerr << "[ERROR] Vulkan is not supported" << std::endl;
+        return false;
+    }
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+#else
     glfwWindowHint(GLFW_DOUBLEBUFFER , 1);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
@@ -128,6 +160,7 @@ bool initializeGLFW()
     // and some other weird resizings
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 #endif
+#endif // USING_VULKAN
 
     //const GLFWvidmode *mode = glfwGetVideoMode(monitor);
     //glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
@@ -156,11 +189,13 @@ bool initializeGLFW()
     // watch window resizing
     glfwSetFramebufferSizeCallback(glfWindow, framebuffer_size_callback);
 
+#ifndef USING_VULKAN
     glfwMakeContextCurrent(glfWindow);
     // VSync
     glfwSwapInterval(1);
+#endif
 
-    std::cout << "[INFO] OpenGL from GLFW "
+    std::cout << "[INFO] Graphics context information from GLFW "
               << glfwGetWindowAttrib(glfWindow, GLFW_CONTEXT_VERSION_MAJOR)
               << "."
               << glfwGetWindowAttrib(glfWindow, GLFW_CONTEXT_VERSION_MINOR)
@@ -171,6 +206,7 @@ bool initializeGLFW()
 
 bool initializeGLAD()
 {
+#ifndef USING_VULKAN
     // load all OpenGL function pointers with glad
     // without it not all the OpenGL functions will be available,
     // such as glGetString(GL_RENDERER), and application might just segfault
@@ -188,7 +224,9 @@ bool initializeGLAD()
     std::cout << "[INFO] OpenGL from glad "
               << GLVersion.major << "." << GLVersion.minor
               << std::endl;
-
+#else
+    std::cout << "[WARNING] GLAD isn't used with Vulkan" << std::endl;
+#endif
     return true;
 }
 
@@ -208,15 +246,22 @@ bool initializeDearImGui()
     setImGuiStyle(highDPIscaleFactor);
 
     // setup platform/renderer bindings
+#ifndef USING_VULKAN
     if (!ImGui_ImplGlfw_InitForOpenGL(glfWindow, true)) { return false; }
     if (!ImGui_ImplOpenGL3_Init()) { return false; }
-
+#else
+    if (!ImGui_ImplGlfw_InitForVulkan(glfWindow, true)) { return false; }
+    // that requires a lot of fucking magic to propery initialize Vulkan first
+    // https://github.com/ocornut/imgui/blob/master/examples/example_glfw_vulkan/main.cpp
+    // if (!ImGui_ImplVulkan_Init()) { return false; }
+#endif
     return true;
 }
 
 // build and compile our shader program
 void buildShaderProgram()
 {
+#ifndef USING_VULKAN
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -288,11 +333,18 @@ void buildShaderProgram()
 
     // uncomment this call to draw in wireframe polygons
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#else
+    std::cout << "[WARNING] Missing shader program for Vulkan " << std::endl;
+#endif
 }
 
 void composeDearImGuiFrame()
 {
+#ifndef USING_VULKAN
     ImGui_ImplOpenGL3_NewFrame();
+#else
+    ImGui_ImplVulkan_NewFrame();
+#endif
     ImGui_ImplGlfw_NewFrame();
 
     ImGui::NewFrame();
@@ -423,6 +475,10 @@ int main(int argc, char *argv[])
         std::cerr << "[ERROR] GLFW initialization failed" << std::endl;
         return EXIT_FAILURE;
     }
+    else
+    {
+        std::cout << "[INFO] GLFW has been successfully initialized" << std::endl;
+    }
 
     if (!initializeGLAD())
     {
@@ -442,6 +498,7 @@ int main(int argc, char *argv[])
     // rendering loop
     while (!glfwWindowShouldClose(glfWindow))
     {
+#ifndef USING_VULKAN
         // the frame starts with a clean scene
         glClearColor(backgroundR, backgroundG, backgroundB, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -460,7 +517,9 @@ int main(int argc, char *argv[])
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(glfWindow);
-
+#else
+        std::cout << "[WARNING] Vulkan rendering isn't implemented yet" << std::endl;
+#endif
         // continuous rendering, even if window is not visible or minimized
         glfwPollEvents();
         // or you can sleep the thread until there are some events

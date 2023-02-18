@@ -31,6 +31,7 @@ option(CRT_LINKAGE_STATIC          "Link MSVC runtime statically"               
 option(USING_PACKAGE_MANAGER       "Using a package manager for resolving dependencies" 0)
 option(USING_PACKAGE_MANAGER_CONAN "Using Conan package manager"                        0)
 option(USING_PACKAGE_MANAGER_VCPKG "Using Conan package manager"                        0)
+option(USING_VULKAN                "Using Vulkan as the graphics backend"               0)
 
 if(WIN32 AND CRT_LINKAGE_STATIC)
     #add_compile_options("/MT")
@@ -68,38 +69,65 @@ set(resource_files
     ${CMAKE_SOURCE_DIR}/JetBrainsMono-ExtraLight.ttf
 )
 
-find_package(OpenGL REQUIRED)
+if(NOT USING_VULKAN)
+    cmake_policy(PUSH)
+    if(POLICY CMP0072)
+        cmake_policy(SET CMP0072 NEW) # prefer GLVND
+    endif()
+    find_package(OpenGL REQUIRED)
+    cmake_policy(POP)
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            ${OPENGL_gl_LIBRARY}
+    )
+else()
+    find_package(Vulkan REQUIRED)
+    target_include_directories(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            ${Vulkan_INCLUDE_DIRS}
+    )
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            ${Vulkan_LIBRARIES}
+    )
+    target_compile_definitions(${CMAKE_PROJECT_NAME}
+        PRIVATE
+            USING_VULKAN
+    )
+endif()
 
-if (UNIX)
-    if (NOT APPLE)
+if(UNIX)
+    if(NOT APPLE)
         find_package(Threads REQUIRED)
         find_package(X11 REQUIRED)
     endif()
 endif()
 
 # glad
-if (USING_PACKAGE_MANAGER)
-    find_package(glad CONFIG REQUIRED)
-    if(USING_PACKAGE_MANAGER_VCPKG)
-        target_link_libraries(${CMAKE_PROJECT_NAME}
-            PRIVATE
-                glad::glad
-        )
+if(NOT USING_VULKAN)
+    if(USING_PACKAGE_MANAGER)
+        find_package(glad CONFIG REQUIRED)
+        if(USING_PACKAGE_MANAGER_VCPKG)
+            target_link_libraries(${CMAKE_PROJECT_NAME}
+                PRIVATE
+                    glad::glad
+            )
+        else()
+            target_link_libraries(${CMAKE_PROJECT_NAME}
+                PRIVATE
+                    glad
+            )
+        endif()
     else()
+        add_library(glad "${GLAD_PREFIX}/src/glad.c")
+        include_directories(
+            "${GLAD_PREFIX}/include"
+        )
         target_link_libraries(${CMAKE_PROJECT_NAME}
             PRIVATE
                 glad
         )
     endif()
-else()
-    add_library(glad "${GLAD_PREFIX}/src/glad.c")
-    include_directories(
-        "${GLAD_PREFIX}/include"
-    )
-    target_link_libraries(${CMAKE_PROJECT_NAME}
-        PRIVATE
-            glad
-    )
 endif()
 
 # GLFW
@@ -107,9 +135,9 @@ if(USING_PACKAGE_MANAGER)#OR (NOT WIN32))
     find_package(glfw3 CONFIG REQUIRED)
 else()
     #find_library(glfw glfw3 PATHS "${GLFW_PREFIX}/lib")
-    set(GLFW_BUILD_EXAMPLES OFF)
-    set(GLFW_BUILD_TESTS OFF)
-    set(GLFW_BUILD_DOCS OFF)
+    set(GLFW_BUILD_EXAMPLES 0)
+    set(GLFW_BUILD_TESTS    0)
+    set(GLFW_BUILD_DOCS     0)
     add_subdirectory(${GLFW_PREFIX})
     include_directories(
         "${GLFW_PREFIX}/include"
@@ -147,12 +175,11 @@ target_sources(${CMAKE_PROJECT_NAME}
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
-        ${OPENGL_gl_LIBRARY}
         glfw
 )
 
-if (UNIX)
-    if (APPLE)
+if(UNIX)
+    if(APPLE)
         target_link_libraries(${CMAKE_PROJECT_NAME}
             PRIVATE
                 "-framework Cocoa"
