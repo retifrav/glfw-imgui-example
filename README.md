@@ -103,9 +103,9 @@ More information about resolving dependencies with vcpkg [here](https://decovar.
 
 ## Vulkan
 
-The application uses OpenGL as the graphics backend. I would like to add an optional Vulkan support, but that won't happen soon.
+The application uses OpenGL as the graphics backend. I would like to add an optional Vulkan support, but that's a work in progress still.
 
-Some initial support have been already added though, even vcpkg ports of dependencies are adjusted accordingly, so you can try to build it like this:
+It looks mostly done, vcpkg ports of dependencies have been adjusted accordingly, so you can try to build it like this:
 
 ``` sh
 $ cd /path/to/glfw-imgui-example
@@ -113,4 +113,4 @@ $ cmake --preset vcpkg-windows-static -DVCPKG_MANIFEST_NO_DEFAULT_FEATURES=1 -DV
 $ cmake --build --preset vcpkg-windows-static
 ```
 
-But of course nothing will actually be rendered in the viewport.
+But at the moment it crashes on the first call to `vkEnumeratePhysicalDevices()` on Windows 11.
