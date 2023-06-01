@@ -6,7 +6,7 @@
         "glad",
         "glfw",
         {
-            "name": "dear-imgui",
+            "name": "dearimgui",
             "features":
             [
                 "backend-glfw"
@@ -24,7 +24,7 @@
             "version": "3.3.8"
         },
         {
-            "name": "dear-imgui",
+            "name": "dearimgui",
             "version": "1.88.0"
         }
     ]

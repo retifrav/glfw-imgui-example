@@ -23,7 +23,7 @@ Dependencies are built from sources. Provide paths to required libraries source 
 
 - glad: `-DGLAD_PREFIX="/path/to/glad/generated"`
 - GLFW: `-DGLFW_PREFIX="/path/to/glfw"`
-- Dear ImGui: `-DDEAR_IMGUI_PREFIX="/path/to/dear-imgui"`
+- Dear ImGui: `-DDEAR_IMGUI_PREFIX="/path/to/dearimgui"`
 
 By default these paths are set to `_dependencies/LIBRARY-NAME` (*so you can copy those there*).
 

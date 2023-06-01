@@ -8,10 +8,10 @@
 #include <GLFW/glfw3.h>
 
 // Dear ImGui
-#include <DearImGui/imgui.h>
-#include <DearImGui/imgui_stdlib.h>
-#include <DearImGui/imgui_impl_glfw.h>
-#include <DearImGui/imgui_impl_opengl3.h>
+#include <dearimgui/imgui.h>
+#include <dearimgui/imgui_stdlib.h>
+#include <dearimgui/imgui_impl_glfw.h>
+#include <dearimgui/imgui_impl_opengl3.h>
 
 #include "functions.h"
 #include "imgui-style.h"

@@ -1,4 +1,4 @@
-#include "DearImGui/imgui.h"
+#include "dearimgui/imgui.h"
 
 void setImGuiStyle(float highDPIscaleFactor)
 {

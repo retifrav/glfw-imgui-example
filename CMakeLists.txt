@@ -23,7 +23,7 @@ set(GLFW_PREFIX
     CACHE STRING "Path to GLFW"
 )
 set(DEAR_IMGUI_PREFIX
-    "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/DearImGui"
+    "${CMAKE_CURRENT_SOURCE_DIR}/_dependencies/dearimgui"
     CACHE STRING "Path to Dear ImGui"
 )
 
@@ -122,10 +122,10 @@ endif()
 
 # Dear ImGui
 if(USING_PACKAGE_MANAGER)
-    find_package(DearImGui CONFIG REQUIRED)
+    find_package(dearimgui CONFIG REQUIRED)
     target_link_libraries(${CMAKE_PROJECT_NAME}
         PRIVATE
-            DearImGui
+            dearimgui
     )
 else() # add Dear ImGui sources manually
     list(APPEND sources
