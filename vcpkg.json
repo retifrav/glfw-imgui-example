@@ -9,7 +9,7 @@
             "name": "dearimgui",
             "features":
             [
-                "backend-glfw"
+                "backend-glfw-opengl"
             ]
         }
     ],
@@ -25,7 +25,7 @@
         },
         {
             "name": "dearimgui",
-            "version": "1.88.0"
+            "version": "1.89.3"
         }
     ]
 }
