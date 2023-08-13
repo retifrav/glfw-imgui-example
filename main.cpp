@@ -92,19 +92,19 @@ bool initializeGLFW()
     // adjust these values depending on the OpenGL supported by your GPU driver
     std::string glsl_version = "";
 #ifdef __APPLE__
-    // GL 3.2 + GLSL 150
+    // GLSL 150 + GL 4.1
     glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     // required on Mac OS
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #elif __linux__
-    // GL 3.2 + GLSL 150
+    // GLSL 150 + GL 4.3
     glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 #elif _WIN32
-    // GL 3.0 + GLSL 130
+    // GLSL 130 + GL 4.6
     glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);

@@ -8,7 +8,9 @@ project("glfw-imgui"
 #message("Project name: " ${CMAKE_PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
+set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Filename postfix for libraries under DEBUG configuration")
 
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -168,6 +170,11 @@ if (UNIX)
         )
     endif()
 endif()
+
+set_target_properties(${CMAKE_PROJECT_NAME}
+    PROPERTIES
+        DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}"
+)
 
 # --- installation
 
