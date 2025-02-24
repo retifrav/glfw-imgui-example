@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 
 project("glfw-imgui"
     DESCRIPTION "Example application based on GLFW and Dear ImGui"
@@ -8,7 +8,7 @@ project("glfw-imgui"
 #message("Project name: " ${CMAKE_PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Filename postfix for libraries under DEBUG configuration")
 
@@ -127,7 +127,7 @@ if(USING_PACKAGE_MANAGER)
     find_package(dearimgui CONFIG REQUIRED)
     target_link_libraries(${CMAKE_PROJECT_NAME}
         PRIVATE
-            dearimgui
+            dearimgui::dearimgui
     )
 else() # add Dear ImGui sources manually
     list(APPEND sources

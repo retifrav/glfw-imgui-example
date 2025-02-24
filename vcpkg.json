@@ -12,20 +12,5 @@
                 "backend-glfw-opengl"
             ]
         }
-    ],
-    "overrides":
-    [
-        {
-            "name": "glad",
-            "version": "0.1.36"
-        },
-        {
-            "name": "glfw",
-            "version": "3.3.8"
-        },
-        {
-            "name": "dearimgui",
-            "version": "1.89.3"
-        }
     ]
 }
