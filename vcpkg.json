@@ -12,5 +12,12 @@
                 "backend-glfw-opengl"
             ]
         }
+    ],
+    "overrides":
+    [
+        {
+            "name": "some",
+            "version": "1.2.3"
+        }
     ]
 }

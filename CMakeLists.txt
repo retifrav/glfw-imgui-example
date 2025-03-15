@@ -72,15 +72,15 @@ set(resource_files
 
 find_package(OpenGL REQUIRED)
 
-if (UNIX)
-    if (NOT APPLE)
+if(UNIX)
+    if(NOT APPLE)
         find_package(Threads REQUIRED)
         find_package(X11 REQUIRED)
     endif()
 endif()
 
 # glad
-if (USING_PACKAGE_MANAGER)
+if(USING_PACKAGE_MANAGER)
     find_package(glad CONFIG REQUIRED)
     if(USING_PACKAGE_MANAGER_VCPKG)
         target_link_libraries(${CMAKE_PROJECT_NAME}
@@ -153,8 +153,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         glfw
 )
 
-if (UNIX)
-    if (APPLE)
+if(UNIX)
+    if(APPLE)
         target_link_libraries(${CMAKE_PROJECT_NAME}
             PRIVATE
                 "-framework Cocoa"
