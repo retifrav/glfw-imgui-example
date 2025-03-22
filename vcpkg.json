@@ -15,9 +15,5 @@
     ],
     "overrides":
     [
-        {
-            "name": "some",
-            "version": "1.2.3"
-        }
     ]
 }
