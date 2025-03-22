@@ -32,7 +32,7 @@ set(DEAR_IMGUI_PREFIX
 option(CRT_LINKAGE_STATIC          "Link MSVC runtime statically"                       0)
 option(USING_PACKAGE_MANAGER       "Using a package manager for resolving dependencies" 0)
 option(USING_PACKAGE_MANAGER_CONAN "Using Conan package manager"                        0)
-option(USING_PACKAGE_MANAGER_VCPKG "Using Conan package manager"                        0)
+option(USING_PACKAGE_MANAGER_VCPKG "Using vcpkg package manager"                        0)
 
 if(WIN32 AND CRT_LINKAGE_STATIC)
     #add_compile_options("/MT")
